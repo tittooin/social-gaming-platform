@@ -1,0 +1,35 @@
+# General
+node_modules/
+*.log
+.DS_Store
+
+# Backend
+backend/node_modules/
+backend/.env
+backend/backend/uploads/
+
+# React Native app (SocialGamingRN)
+SocialGamingRN/node_modules/
+SocialGamingRN/.env
+SocialGamingRN/ios/Pods/
+SocialGamingRN/ios/build/
+SocialGamingRN/android/.gradle/
+SocialGamingRN/android/app/build/
+
+# Web app (social-gaming-app)
+social-gaming-app/node_modules/
+social-gaming-app/dist/
+social-gaming-app/build/
+
+# Unity (New Unity Project)
+New Unity Project/Library/
+New Unity Project/Temp/
+New Unity Project/Logs/
+New Unity Project/UserSettings/
+New Unity Project/Build*/
+
+# Unity (unity-game)
+unity-game/Library/
+unity-game/Temp/
+unity-game/Logs/
+unity-game/UserSettings/

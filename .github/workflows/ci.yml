@@ -1,0 +1,77 @@
+name: CI/CD Backend
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install backend deps
+        working-directory: backend
+        run: npm ci
+
+      - name: Lint
+        working-directory: backend
+        run: npm run lint || echo "Lint issues ignored in skeleton"
+
+      - name: Test
+        working-directory: backend
+        run: npm test
+
+      - name: Build Docker image
+        working-directory: backend
+        run: |
+          IMAGE="ghcr.io/${{ github.repository }}/backend:${{ github.sha }}"
+          echo "Building $IMAGE"
+          docker build -t $IMAGE .
+
+      - name: Login to GHCR
+        run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Push image
+        working-directory: backend
+        run: |
+          IMAGE="ghcr.io/${{ github.repository }}/backend:${{ github.sha }}"
+          docker push $IMAGE
+
+  deploy-staging:
+    needs: build-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Deploy to staging via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.STAGING_HOST }}
+          username: ${{ secrets.STAGING_USER }}
+          key: ${{ secrets.STAGING_SSH_KEY }}
+          script: |
+            set -e
+            IMAGE=ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
+            echo "Pulling image $IMAGE"
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            docker pull $IMAGE
+            docker rm -f social-gaming-backend || true
+            docker run -d \
+              --name social-gaming-backend \
+              -p 4000:4000 \
+              --env PORT=4000 \
+              --env DATABASE_URL='${{ secrets.STAGING_DATABASE_URL }}' \
+              --env DB_SSL=true \
+              --env SUPABASE_URL='${{ secrets.SUPABASE_URL }}' \
+              --env SUPABASE_SERVICE_KEY='${{ secrets.SUPABASE_SERVICE_KEY }}' \
+              --env SUPABASE_ANON_KEY='${{ secrets.SUPABASE_ANON_KEY }}' \
+              --env JWT_SECRET='${{ secrets.JWT_SECRET }}' \
+              $IMAGE
