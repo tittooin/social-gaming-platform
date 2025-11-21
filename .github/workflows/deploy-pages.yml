@@ -38,6 +38,14 @@ jobs:
           EXPO_PUBLIC_API_BASE: https://social-gaming-platform.onrender.com
         run: npx expo export --platform web --output-dir web-build
 
+      - name: Inspect build output
+        working-directory: social-gaming-app
+        run: |
+          echo "Listing web-build contents"
+          ls -alR web-build | head -n 500
+          echo "Index.html script/link references"
+          grep -iE "index.*\.js|\.css" web-build/index.html || true
+
       - name: Add SPA fallback, CNAME and nojekyll
         working-directory: social-gaming-app
         run: |
