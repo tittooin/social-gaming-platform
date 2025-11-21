@@ -64,14 +64,16 @@ jobs:
             echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             docker pull $IMAGE
             docker rm -f social-gaming-backend || true
-            docker run -d \
-              --name social-gaming-backend \
-              -p 4000:4000 \
-              --env PORT=4000 \
-              --env DATABASE_URL='${{ secrets.STAGING_DATABASE_URL }}' \
-              --env DB_SSL=true \
-              --env SUPABASE_URL='${{ secrets.SUPABASE_URL }}' \
-              --env SUPABASE_SERVICE_KEY='${{ secrets.SUPABASE_SERVICE_KEY }}' \
-              --env SUPABASE_ANON_KEY='${{ secrets.SUPABASE_ANON_KEY }}' \
-              --env JWT_SECRET='${{ secrets.JWT_SECRET }}' \
-              $IMAGE
+          docker run -d \
+            --name social-gaming-backend \
+            -p 4000:4000 \
+            --env PORT=4000 \
+            --env DATABASE_URL='${{ secrets.STAGING_DATABASE_URL }}' \
+            --env DB_SSL=true \
+            --env SUPABASE_URL='${{ secrets.SUPABASE_URL }}' \
+            --env SUPABASE_SERVICE_KEY='${{ secrets.SUPABASE_SERVICE_KEY }}' \
+            --env SUPABASE_ANON_KEY='${{ secrets.SUPABASE_ANON_KEY }}' \
+            --env JWT_SECRET='${{ secrets.JWT_SECRET }}' \
+            $IMAGE
+            # Run database migrations inside the freshly started container
+            docker exec social-gaming-backend node scripts/runMigrations.js
