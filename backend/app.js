@@ -37,6 +37,11 @@ app.use('/games', express.static(path.join(process.cwd(), 'backend', 'public', '
 // Health check
 app.get('/health', (req, res) => res.json({ status: 'ok', uptime: process.uptime() }));
 
+// Root route (useful for human checks on the base URL)
+app.get('/', (req, res) => {
+  res.send('Social Gaming API is running. Try GET /health');
+});
+
 // Routes
 app.use('/auth', authRouter);
 app.use('/wallet', walletRouter);
