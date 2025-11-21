@@ -32,15 +32,18 @@ jobs:
         working-directory: social-gaming-app
         run: npm ci
 
-      - name: Build web app
+      - name: Build web app (Expo export)
         working-directory: social-gaming-app
         env:
           EXPO_PUBLIC_API_BASE: https://social-gaming-platform.onrender.com
-        run: npm run build:web
+        run: npx expo export --platform web --output-dir web-build
 
-      - name: Add SPA 404 fallback
+      - name: Add SPA fallback, CNAME and nojekyll
         working-directory: social-gaming-app
-        run: cp web-build/index.html web-build/404.html
+        run: |
+          cp web-build/index.html web-build/404.html
+          echo tittoos.fun > web-build/CNAME
+          touch web-build/.nojekyll
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
