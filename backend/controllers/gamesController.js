@@ -55,9 +55,19 @@ export async function getStaticGames(req, res, next) {
         const dir = d.name;
         const hasIndex = fs.existsSync(path.join(baseDir, dir, 'index.html'));
         if (!hasIndex) return null;
-        // Thumbnails: prefer PNG only (per user request)
-        const thumbPng = path.join(baseDir, dir, 'thumb.png');
-        const thumb = fs.existsSync(thumbPng) ? `/games/${dir}/thumb.png` : null;
+        // Thumbnails: support common extensions and alternate filename 'thumbnail'
+        const thumbCandidates = [
+          'thumb.png', 'thumb.jpg', 'thumb.jpeg', 'thumb.webp',
+          'thumbnail.png', 'thumbnail.jpg', 'thumbnail.jpeg', 'thumbnail.webp',
+        ];
+        let thumb = null;
+        for (const file of thumbCandidates) {
+          const full = path.join(baseDir, dir, file);
+          if (fs.existsSync(full)) {
+            thumb = `/games/${dir}/${file}`;
+            break;
+          }
+        }
         const autoName = dir
           .replace(/-/g, ' ')
           .replace(/\b\w/g, (c) => c.toUpperCase());
