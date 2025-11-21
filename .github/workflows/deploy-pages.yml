@@ -21,6 +21,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -37,6 +40,12 @@ jobs:
         env:
           EXPO_PUBLIC_API_BASE: https://social-gaming-platform.onrender.com
         run: npx expo export --platform web --output-dir web-build
+
+      - name: Patch index.html for cache-busting and relative paths
+        working-directory: social-gaming-app
+        run: |
+          # Convert absolute script path to relative and append cache-busting query
+          sed -E -i 's|src="/_expo/static/js/web/(index-[^"]+\.js)"|src="./_expo/static/js/web/\1?v=${{ github.run_id }}"|g' web-build/index.html
 
       - name: Inspect build output
         working-directory: social-gaming-app
