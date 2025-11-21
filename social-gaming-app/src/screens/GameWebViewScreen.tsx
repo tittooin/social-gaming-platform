@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, ActivityIndicator, StyleSheet, Alert } from 'react-native';
+import { View, Text, ActivityIndicator, StyleSheet, Alert, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { WebView } from 'react-native-webview';
 import { API_BASE, endMatch, startMatch } from '../api/client';
@@ -55,6 +55,22 @@ export default function GameWebViewScreen() {
       <View style={styles.loadingWrap}>
         <ActivityIndicator size="large" />
         <Text style={styles.loadingText}>Preparing game…</Text>
+      </View>
+    );
+  }
+
+  // On web, redirect to the final URL when ready
+  useEffect(() => {
+    if (Platform.OS === 'web' && finalUrl) {
+      try { window.location.assign(finalUrl); } catch {}
+    }
+  }, [finalUrl]);
+
+  // Web fallback: react-native-webview does not support web; redirect instead
+  if (Platform.OS === 'web') {
+    return (
+      <View style={styles.loadingWrap}>
+        <Text style={styles.loadingText}>Opening game…</Text>
       </View>
     );
   }
