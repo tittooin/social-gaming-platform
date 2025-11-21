@@ -17,9 +17,7 @@ services:
           property: connectionString
       - key: DB_SSL
         value: "true"
-      # Render sets PORT automatically; Express should use process.env.PORT
-      - key: PORT
-        value: "4001"
+      # Do not set PORT manually; Render injects PORT and app should use it
 
   # Frontend Static Site (Expo Web export)
   - type: static_site
