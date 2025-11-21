@@ -6,6 +6,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
+import HeaderBar from './src/lib/HeaderBar';
+import { colors, isWeb } from './src/lib/theme';
 
 // Screens
 import LoginScreen from './src/screens/LoginScreen';
@@ -38,21 +40,24 @@ const Tabs = createBottomTabNavigator<MainTabParamList>();
 
 function MainTabs() {
   return (
-    <Tabs.Navigator>
-      <Tabs.Screen name="Feed" component={FeedScreen} />
-      <Tabs.Screen name="Play" component={PlayScreen} />
-      <Tabs.Screen name="Wallet" component={WalletScreen} />
-      <Tabs.Screen name="Profile" component={ProfileScreen} />
-      <Tabs.Screen name="Players" component={PlayersScreen} />
-      <Tabs.Screen name="Lobby" component={LobbyScreen} />
-    </Tabs.Navigator>
+    <View style={{ flex: 1 }}>
+      <HeaderBar />
+      <Tabs.Navigator screenOptions={{ headerShown: false, tabBarStyle: { display: isWeb ? 'none' : 'flex' } }}>
+        <Tabs.Screen name="Feed" component={FeedScreen} />
+        <Tabs.Screen name="Play" component={PlayScreen} />
+        <Tabs.Screen name="Wallet" component={WalletScreen} />
+        <Tabs.Screen name="Profile" component={ProfileScreen} />
+        <Tabs.Screen name="Players" component={PlayersScreen} />
+        <Tabs.Screen name="Lobby" component={LobbyScreen} />
+      </Tabs.Navigator>
+    </View>
   );
 }
 
 export default function App() {
   const theme = {
     ...DefaultTheme,
-    colors: { ...DefaultTheme.colors, background: '#fff' },
+    colors: { ...DefaultTheme.colors, background: colors.background },
   };
 
   // Deep link config

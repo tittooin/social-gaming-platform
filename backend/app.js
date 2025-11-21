@@ -24,7 +24,10 @@ import racingRouter from './src/routes/racing.js';
 const app = express();
 
 // Security & middleware
-app.use(helmet());
+// Allow images and static assets to be loaded from other origins (e.g., Expo on 8081/8084)
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+}));
 app.use(cors({ origin: '*', methods: ['GET', 'POST'], allowedHeaders: ['Content-Type', 'Authorization'] }));
 app.use(express.json());
 app.use(morgan('combined'));
@@ -32,7 +35,8 @@ app.use(morgan('combined'));
 // Static uploads
 app.use('/uploads', express.static(path.join(process.cwd(), 'backend', 'uploads')));
 // Static games (HTML5) served under /games/<id>/index.html
-app.use('/games', express.static(path.join(process.cwd(), 'backend', 'public', 'games')));
+// Fix path: process.cwd() is already the backend folder
+app.use('/games', express.static(path.join(process.cwd(), 'public', 'games')));
 
 // Health check
 app.get('/health', (req, res) => res.json({ status: 'ok', uptime: process.uptime() }));

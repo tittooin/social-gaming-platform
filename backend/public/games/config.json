@@ -1,0 +1,11 @@
+{
+  "bots": {
+    "ludo": true,
+    "chess": true
+  },
+  "names": {
+    "tic-tac-toe": "Tic Tac Toe",
+    "bubble-shooter": "Bubble Shooter",
+    "space-shooter": "Space Shooter"
+  }
+}
